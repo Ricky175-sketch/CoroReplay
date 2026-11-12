@@ -1,0 +1,40 @@
+{
+  "schema_version": 1,
+  "scheduler_semantics_version": 1,
+  "scenario": {"id": "deadlock_lock_order", "semantic_version": 1},
+  "seed": {"base": 7, "effective": 7191089600892374487, "run_index": 0},
+  "rng_version": "mt19937_64-rejection-v1",
+  "limits": {"max_decisions": 10000, "max_operations": 10000, "max_trace_events": 100000},
+  "decisions": [
+    {"index": 0, "kind": "resume", "time_ns": 0, "end_time_ns": 0, "selected_operation": 2, "ready": [1, 2], "event_begin": 4, "event_end": 8, "wakes": []},
+    {"index": 1, "kind": "resume", "time_ns": 0, "end_time_ns": 0, "selected_operation": 1, "ready": [1, 2], "event_begin": 8, "event_end": 12, "wakes": []},
+    {"index": 2, "kind": "resume", "time_ns": 0, "end_time_ns": 0, "selected_operation": 2, "ready": [1, 2], "event_begin": 12, "event_end": 15, "wakes": []},
+    {"index": 3, "kind": "resume", "time_ns": 0, "end_time_ns": 0, "selected_operation": 1, "ready": [1], "event_begin": 15, "event_end": 18, "wakes": []}
+  ],
+  "events": [
+    {"index": 0, "decision_index": 18446744073709551615, "time_ns": 0, "kind": "operation_create", "operation": 1, "related_operation": 0, "resource": 0, "timer": 0, "value": 0, "value2": 0, "text": ""},
+    {"index": 1, "decision_index": 18446744073709551615, "time_ns": 0, "kind": "ready", "operation": 1, "related_operation": 0, "resource": 0, "timer": 0, "value": 0, "value2": 0, "text": ""},
+    {"index": 2, "decision_index": 18446744073709551615, "time_ns": 0, "kind": "operation_create", "operation": 2, "related_operation": 0, "resource": 0, "timer": 0, "value": 0, "value2": 0, "text": ""},
+    {"index": 3, "decision_index": 18446744073709551615, "time_ns": 0, "kind": "ready", "operation": 2, "related_operation": 0, "resource": 0, "timer": 0, "value": 0, "value2": 0, "text": ""},
+    {"index": 4, "decision_index": 0, "time_ns": 0, "kind": "operation_resume", "operation": 2, "related_operation": 0, "resource": 0, "timer": 0, "value": 0, "value2": 0, "text": ""},
+    {"index": 5, "decision_index": 0, "time_ns": 0, "kind": "mutex_acquire", "operation": 2, "related_operation": 0, "resource": 2, "timer": 0, "value": 2, "value2": 0, "text": ""},
+    {"index": 6, "decision_index": 0, "time_ns": 0, "kind": "ready", "operation": 2, "related_operation": 0, "resource": 0, "timer": 0, "value": 0, "value2": 0, "text": ""},
+    {"index": 7, "decision_index": 0, "time_ns": 0, "kind": "operation_suspend", "operation": 2, "related_operation": 0, "resource": 0, "timer": 0, "value": 0, "value2": 0, "text": "none"},
+    {"index": 8, "decision_index": 1, "time_ns": 0, "kind": "operation_resume", "operation": 1, "related_operation": 0, "resource": 0, "timer": 0, "value": 0, "value2": 0, "text": ""},
+    {"index": 9, "decision_index": 1, "time_ns": 0, "kind": "mutex_acquire", "operation": 1, "related_operation": 0, "resource": 1, "timer": 0, "value": 1, "value2": 0, "text": ""},
+    {"index": 10, "decision_index": 1, "time_ns": 0, "kind": "ready", "operation": 1, "related_operation": 0, "resource": 0, "timer": 0, "value": 0, "value2": 0, "text": ""},
+    {"index": 11, "decision_index": 1, "time_ns": 0, "kind": "operation_suspend", "operation": 1, "related_operation": 0, "resource": 0, "timer": 0, "value": 0, "value2": 0, "text": "none"},
+    {"index": 12, "decision_index": 2, "time_ns": 0, "kind": "operation_resume", "operation": 2, "related_operation": 0, "resource": 0, "timer": 0, "value": 0, "value2": 0, "text": ""},
+    {"index": 13, "decision_index": 2, "time_ns": 0, "kind": "wait_start", "operation": 2, "related_operation": 1, "resource": 1, "timer": 0, "value": 0, "value2": 0, "text": "mutex"},
+    {"index": 14, "decision_index": 2, "time_ns": 0, "kind": "operation_suspend", "operation": 2, "related_operation": 1, "resource": 1, "timer": 0, "value": 0, "value2": 0, "text": "mutex"},
+    {"index": 15, "decision_index": 3, "time_ns": 0, "kind": "operation_resume", "operation": 1, "related_operation": 0, "resource": 0, "timer": 0, "value": 0, "value2": 0, "text": ""},
+    {"index": 16, "decision_index": 3, "time_ns": 0, "kind": "wait_start", "operation": 1, "related_operation": 2, "resource": 2, "timer": 0, "value": 0, "value2": 0, "text": "mutex"},
+    {"index": 17, "decision_index": 3, "time_ns": 0, "kind": "operation_suspend", "operation": 1, "related_operation": 2, "resource": 2, "timer": 0, "value": 0, "value2": 0, "text": "mutex"},
+    {"index": 18, "decision_index": 18446744073709551615, "time_ns": 0, "kind": "failure", "operation": 0, "related_operation": 0, "resource": 0, "timer": 0, "value": 0, "value2": 0, "text": "deadlock:wait_cycle"}
+  ],
+  "terminal": {"kind": "deadlock", "code": "wait_cycle"},
+  "waiting": [
+    {"operation": 1, "wait_kind": "mutex", "wait_for": 2, "resource": 2, "timer": 0},
+    {"operation": 2, "wait_kind": "mutex", "wait_for": 1, "resource": 1, "timer": 0}
+  ]
+}

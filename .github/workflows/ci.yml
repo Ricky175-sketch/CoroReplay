@@ -1,0 +1,98 @@
+name: ci
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  build-and-test:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: ubuntu-gcc-debug
+            os: ubuntu-latest
+            cc: gcc
+            cxx: g++
+            build_type: Debug
+          - name: ubuntu-gcc-release
+            os: ubuntu-latest
+            cc: gcc
+            cxx: g++
+            build_type: Release
+          - name: ubuntu-clang-debug
+            os: ubuntu-latest
+            cc: clang
+            cxx: clang++
+            build_type: Debug
+          - name: macos-appleclang-debug
+            os: macos-latest
+            cc: clang
+            cxx: clang++
+            build_type: Debug
+          - name: macos-appleclang-release
+            os: macos-latest
+            cc: clang
+            cxx: clang++
+            build_type: Release
+    name: ${{ matrix.name }}
+    runs-on: ${{ matrix.os }}
+    env:
+      CC: ${{ matrix.cc }}
+      CXX: ${{ matrix.cxx }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Configure
+        run: >-
+          cmake -S . -B build
+          -DCMAKE_BUILD_TYPE=${{ matrix.build_type }}
+          -DCOROREPLAY_BUILD_TESTING=ON
+          -DCOROREPLAY_BUILD_EXAMPLES=ON
+          -DCOROREPLAY_BUILD_BENCHMARKS=ON
+          -DCOROREPLAY_WARNINGS_AS_ERRORS=ON
+      - name: Build
+        run: cmake --build build --parallel
+      - name: Test
+        run: ctest --test-dir build --output-on-failure
+      - name: Scheduler benchmark smoke test
+        run: ./build/scheduler_bench 1000
+      - name: Trace and replay benchmark smoke test
+        run: ./build/trace_replay_bench 128
+      - name: Upload failure artifacts
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cororeplay-${{ matrix.name }}
+          path: |
+            build/demo-artifacts/
+            build/Testing/Temporary/
+          if-no-files-found: ignore
+
+  asan-ubsan:
+    runs-on: ubuntu-latest
+    env:
+      CC: gcc
+      CXX: g++
+    steps:
+      - uses: actions/checkout@v4
+      - name: Configure
+        run: >-
+          cmake -S . -B build
+          -DCMAKE_BUILD_TYPE=Debug
+          -DCOROREPLAY_BUILD_TESTING=ON
+          -DCOROREPLAY_BUILD_EXAMPLES=ON
+          -DCOROREPLAY_WARNINGS_AS_ERRORS=ON
+          -DCOROREPLAY_ENABLE_SANITIZERS=ON
+      - name: Build
+        run: cmake --build build --parallel
+      - name: Test with ASan and UBSan
+        run: ctest --test-dir build --output-on-failure
+      - name: Upload sanitizer failure artifacts
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cororeplay-asan-ubsan
+          path: |
+            build/demo-artifacts/
+            build/Testing/Temporary/
+          if-no-files-found: ignore
